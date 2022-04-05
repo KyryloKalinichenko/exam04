@@ -47,11 +47,10 @@ void count(main_t* stru)
 	}
 }
 
-
-
 void pos(main_t* stru)
 {
-	if ((stru->pos = malloc(sizeof(int) * stru->cnt)))
+	
+	if (!(stru->pos = malloc(sizeof(int) * stru->cnt)))
    	{
 		print_err("error: fatal\n");
 		exit(EXIT_FAILURE);
@@ -64,15 +63,55 @@ void pos(main_t* stru)
 		}
 }
 
+void lst_create(main_t* stru){
+	lst_t* tmp = malloc(sizeof(lst_t));
+	lst_t* pr;
+
+	if (!tmp)
+   	{
+		print_err("error: fatal\n");
+		exit(EXIT_FAILURE);
+	}
+
+	tmp->next = NULL;
+	tmp->pr = NULL;
+	tmp->cmd = &stru->argv[1];
+
+	if (stru->cnt == 0)
+		tmp->type = ';';
+	else
+		tmp->type = stru->argv[stru->pos[0]];
+	pr = tmp;
+	for (int i = 1; i <= stru->cnt; i++)
+	{
+		tmp = malloc(sizeof(lst_t));
+		if (!tmp)
+   		{
+			print_err("error: fatal\n");
+			exit(EXIT_FAILURE);
+		}
+		tmp->next = NULL;
+		tmp->pr = pr;
+		pr->next = tmp;
+
+		tmp->cmd = stru->argv[stru->pos[i-1]+1];
+
+		
+	}
+
+}
+
 int main(int argc, char** argv, char** env)
 {
 	if (argc == 1)
 		return 0;
 
 	main_t stru;
+
 	stru.argc = argc;
 	stru.argv = argv;
 	stru.env = env;
+	
 	count(&stru);
 	pos(&stru);
 
