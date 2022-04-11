@@ -161,7 +161,6 @@ void	comm(main_t* stru, lst_t* curr){
 void	lst_use(main_t* stru){
 	lst_t* curr = stru->lst;
 	while(curr){
-		//printf("TYPE %c CMD %s\n", curr->type, *curr->cmd);
 		if (*curr->cmd == NULL)
 		{
 			curr = curr->next;
@@ -176,7 +175,7 @@ void	lst_use(main_t* stru){
 			}
 			if (-1 == chdir(curr->cmd[1]))
 			{
-				print_err("error: cd: cannot change directory to \n");
+				print_err("error: cd: cannot change directory to ");
 				print_err(curr->cmd[1]);
 				print_err("\n");
 				exit(EXIT_FAILURE);
