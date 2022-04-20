@@ -4,6 +4,7 @@ line (){
 
     ONE=$(./my $1)
     TWO=$(./norm $1)
+
     RED='\033[0;31m'
     GREEN='\033[0;32m'
     NC='\033[0m'
@@ -11,9 +12,11 @@ line (){
 
     if [ "$ONE" == "$TWO" ];then
     printf "${GREEN}equal${NC}\n";
+    echo "$ONE"
+
     else
-    echo "${RED}NOT equal${NC}";
-    echo $ONE
+    echo "NOT equal";
+    echo "$ONE"
     exit
 
     fi
@@ -54,9 +57,14 @@ line "; /bin/cat subject.fr.txt ; /bin/cat subject.fr.txt | /usr/bin/grep a | /u
 line "blah | /bin/echo OK"
 line "blah | /bin/echo OK ;"
 
+line "/bin/ls | /usr/bin/grep microshell ; /bin/echo i love my microshell"
+
 line "cd lktbdn"
 line "cd "
-line "/bin/ls | /usr/bin/grep microshell ; /bin/echo i love my microshell"
+
+echo "------------------------------------"
+line "cd ; /bin/ls"
+
 
 printf "\e[1;32mDone\e[0m\n"
 

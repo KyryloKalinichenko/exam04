@@ -112,18 +112,19 @@ void lst_create(main_t* stru){
 
 }
 
-void exec(char** cmd, char** env){
+int exec(char** cmd, char** env){
 	if (-1 == execve(*cmd, cmd, env))
 	{
 		print_err("error: cannot execute ");
 		print_err(*cmd);
 		print_err("\n");
 
-		exit(EXIT_FAILURE);
+		return 1;
 	}
+	return 0;
 }
 
-void	comm(main_t* stru, lst_t* curr){
+int	comm(main_t* stru, lst_t* curr){
 	if(curr->type == '|' && -1 == pipe(curr->fd))
 	{
 		print_err("error: fatal\n");
@@ -142,7 +143,8 @@ void	comm(main_t* stru, lst_t* curr){
 			print_err("error: fatal\n");
 			exit(EXIT_FAILURE);
 		}
-		exec(curr->cmd, stru->env);
+		if (exec(curr->cmd, stru->env))
+			return 1;
 	}
 	else if(pid > 0){
 		waitpid(pid, &stat, 0);
@@ -155,11 +157,15 @@ void	comm(main_t* stru, lst_t* curr){
 	{
 		print_err("error: fatal\n");
 		exit(EXIT_FAILURE);
+		return 1;
 	}
+	
+	return WEXITSTATUS(stat);
 }
 
 void	lst_use(main_t* stru){
 	lst_t* curr = stru->lst;
+	int res = 0;
 	while(curr){
 		if (*curr->cmd == NULL)
 		{
@@ -171,20 +177,25 @@ void	lst_use(main_t* stru){
 			if (!curr->cmd[1] || curr->cmd[2])
 			{
 				print_err("error: cd: bad arguments\n");
-				exit(EXIT_FAILURE);
+				res = 1;
+				curr = curr->next;
+				continue ;
+
+
 			}
 			if (-1 == chdir(curr->cmd[1]))
 			{
 				print_err("error: cd: cannot change directory to ");
 				print_err(curr->cmd[1]);
 				print_err("\n");
-				exit(EXIT_FAILURE);
+				res = 1;
 			}
 		}
 		else
 			comm(stru, curr);
 		curr = curr->next;
 	}
+	exit(res);
 }
 
 int main(int argc, char** argv, char** env)
