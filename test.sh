@@ -12,7 +12,6 @@ line (){
 
     if [ "$ONE" == "$TWO" ];then
     printf "${GREEN}equal${NC}\n";
-    echo "$ONE"
 
     else
     echo "NOT equal";

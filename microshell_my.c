@@ -4,6 +4,20 @@
 #include <string.h>
 #include <sys/wait.h>
 
+
+#ifndef TEST
+#define TEST 0
+#endif 
+
+
+/*
+	- fd
+	- return value
+	- printed res
+	- printed err
+	- 
+
+*/
 typedef struct lst_s lst_t;
 
 typedef struct main_s {
@@ -146,19 +160,11 @@ int	comm(main_t* stru, lst_t* curr){
 		if (exec(curr->cmd, stru->env))
 			return 1;
 	}
-	else if(pid > 0){
-		waitpid(pid, &stat, 0);
-		if (curr->type == '|')
-			close(curr->fd[1]);
-		if (curr->pr && curr->pr->type == '|')
-			close(curr->pr->fd[0]);
-	}
-	else
-	{
-		print_err("error: fatal\n");
-		exit(EXIT_FAILURE);
-		return 1;
-	}
+	waitpid(pid, &stat, 0);
+	if (curr->type == '|')
+		close(curr->fd[1]);
+	if (curr->pr && curr->pr->type == '|')
+		close(curr->pr->fd[0]);
 	
 	return WEXITSTATUS(stat);
 }
@@ -167,6 +173,7 @@ void	lst_use(main_t* stru){
 	lst_t* curr = stru->lst;
 	int res = 0;
 	while(curr){
+	///	printf("CMD %s TYPE %c \n", *curr->cmd, curr->type);
 		if (*curr->cmd == NULL)
 		{
 			curr = curr->next;
@@ -192,9 +199,11 @@ void	lst_use(main_t* stru){
 			}
 		}
 		else
-			comm(stru, curr);
+			res = comm(stru, curr);
 		curr = curr->next;
 	}
+	while (TEST)
+		;
 	exit(res);
 }
 
